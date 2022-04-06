@@ -8,12 +8,18 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class RecipeCategoryListViewModel : ObservableObject {
+    
+    @Published var recipeCategories: [RecipeCategoryViewModel] = []
+    
     func populateCategories() async {
         do {
             let recipeCategoryResponse = try await Webservice().get(url: Constants.Urls.recipeCategoriesURL) { data in
                 return try? JSONDecoder().decode(RecipeCategoryResponse.self, from: data)
             }
+            
+            self.recipeCategories = recipeCategoryResponse.categories.map(RecipeCategoryViewModel.init)
         } catch {
             print(error)
         }
